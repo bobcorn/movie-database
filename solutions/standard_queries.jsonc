@@ -5,22 +5,22 @@
         reviews for Rotten Tomatoes are contained in the ​tomatoes​ nested document. Sort the
         results using the ascending order for the release date.
 */
-FILTER: { "tomatoes.viewer.rating": { $gt: 4.5 }, released: { $exists: 1 } }
-SORT: { released: 1 }
+/* FILTER: */ { "tomatoes.viewer.rating": { $gt: 4.5 }, released: { $exists: 1 } }
+/* SORT: */ { released: 1 }
 
 /*
     2.  Find the movies that have been written by 3 writers and directed by 2 directors.
 */
-FILTER: { writers: { $size: 3 }, directors: { $size: 2 } }
+/* FILTER: */ { writers: { $size: 3 }, directors: { $size: 2 } }
 
 /*
     3.  For the movies that belong to the “Drama” genre and belong to the USA country, show
         their plot, duration (​runtime​), and title. Order the results according to the descending
         duration.
 */
-FILTER: { genres: "Drama", countries: "USA" }
-PROJECT: { plot: 1, runtime: 1, title: 1}
-SORT: { runtime: -1 }
+/* FILTER: */ { genres: "Drama", countries: "USA" }
+/* PROJECT: */ { plot: 1, runtime: 1, title: 1}
+/* SORT: */ { runtime: -1 }
 
 /*
     4.  Find the movies satisfying all the following conditions:
@@ -34,6 +34,6 @@ SORT: { runtime: -1 }
 
         Sort the results according to the ascending order of the IMDB rating.
 */
-FILTER: { year: { $gte: 1900, $lte: 1910 }, "imdb.rating": { $gt: 9.0 }, fullplot: { $exists: 1 } }
-PROJECT: { year: 1, "fullplot_length": { $strLenCP: "$fullplot" } }
-SORT: { "imdb.rating": 1 }
+/* FILTER: */ { year: { $gte: 1900, $lte: 1910 }, "imdb.rating": { $gt: 9.0 }, fullplot: { $exists: 1 } }
+/* PROJECT: */ { year: 1, "fullplot_length": { $strLenCP: "$fullplot" } }
+/* SORT: */ { "imdb.rating": 1 }
