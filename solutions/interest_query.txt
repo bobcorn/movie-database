@@ -1,0 +1,60 @@
+// Interest query
+
+/* 
+    For each genre, retrieve the 30 top rated movie titles in terms of "overall rating".
+    The "overall rating" is calculated as the average of the normalized ratings by
+    Metacritic ("metacritic"), IMDb ("imdb.rating") and Rotten Tomatoes ("tomatoes.critic.rating").
+    Only movies which contain all the three ratings must be considered.
+*/
+[
+  {
+    $match: {
+      metacritic: { $exists: 1 },
+      "imdb.rating": { $exists: 1 },
+      "tomatoes.critic.rating": { $exists: 1 },
+    },
+  },
+  {
+    $unwind: {
+      path: "$genres",
+    },
+  },
+  {
+    $project: {
+      title: 1,
+      genres: 1,
+      overall_rating: {
+        $divide: [
+          {
+            $sum: [
+              { $divide: ["$metacritic", 10] },
+              "$imdb.rating",
+              "$tomatoes.critic.rating",
+            ],
+          },
+          3,
+        ],
+      },
+    },
+  },
+  {
+    $sort: {
+      overall_rating: -1,
+    },
+  },
+  {
+    $group: {
+      _id: "$genres",
+      movies: {
+        $push: "$$ROOT.title",
+      },
+    },
+  },
+  {
+    $project: {
+      top_30: {
+        $slice: ["$movies", 30],
+      },
+    },
+  },
+];

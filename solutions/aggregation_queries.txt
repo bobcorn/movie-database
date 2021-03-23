@@ -1,0 +1,90 @@
+// Aggregation queries
+
+/* 
+    1.  Find the average rating score on Rotten Tomatoes for each publication year.
+*/
+[
+  {
+    $group: {
+      _id: "$year",
+      average_rating: {
+        $avg: "$tomatoes.viewer.rating",
+      },
+    },
+  },
+];
+
+/* 
+    2.  For movies that include Italy as a country, get the average number of directors.
+        Be sure to consider only the movies that contain the list of directors.
+*/
+[
+  {
+    $match: {
+      countries: "Italy",
+      directors: { $exists: 1 },
+    },
+  },
+  {
+    $group: {
+      _id: null,
+      average_directors: {
+        $avg: { $size: "$directors" },
+      },
+    },
+  },
+]
+
+/* 
+    3.  Considering only movies that:
+            a. contain information about IMDB score ratings
+            b. contain a number for IMDB score ratings (you can check it by using ​$type​)
+        
+        compute, separately for each movie’s genre:
+            - the average published year, and
+            - the maximum score on IMDB.
+*/
+[
+  {
+    $match: {
+      "imdb.rating": { $exists: 1, $type: "number" },
+    },
+  },
+  {
+    $unwind: {
+      path: "$genres",
+    },
+  },
+  {
+    $group: {
+      _id: "$genres",
+      average_year: { $avg: "$year" },
+      maximum_score: { $max: "$imdb.rating" },
+    },
+  },
+]
+
+/* 
+    4.  Count the number of movies directed by each director. Sort the results according to the
+        descending order of the number of directed movies.
+*/
+[
+  {
+    $unwind: {
+      path: "$directors",
+    },
+  },
+  {
+    $group: {
+      _id: "$directors",
+      movies_directed: {
+        $sum: 1,
+      },
+    },
+  },
+  {
+    $sort: {
+      movies_directed: -1,
+    },
+  },
+]

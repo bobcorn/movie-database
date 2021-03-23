@@ -1,0 +1,39 @@
+// Standard query resolution
+
+/* 
+    1.  Find all the movies which have been scored higher than 4.5 on Rotten Tomatoes. The 
+        reviews for Rotten Tomatoes are contained in the ​tomatoes​ nested document. Sort the
+        results using the ascending order for the release date.
+*/
+FILTER: { "tomatoes.viewer.rating": { $gt: 4.5 }, released: { $exists: 1 } }
+SORT: { released: 1 }
+
+/*
+    2.  Find the movies that have been written by 3 writers and directed by 2 directors.
+*/
+FILTER: { writers: { $size: 3 }, directors: { $size: 2 } }
+
+/*
+    3.  For the movies that belong to the “Drama” genre and belong to the USA country, show
+        their plot, duration (​runtime​), and title. Order the results according to the descending
+        duration.
+*/
+FILTER: { genres: "Drama", countries: "USA" }
+PROJECT: { plot: 1, runtime: 1, title: 1}
+SORT: { runtime: -1 }
+
+/*
+    4.  Find the movies satisfying all the following conditions:
+            - have been published between 1900 and 1910
+            - have an imdb rating higher than 9.0
+            - contain the ​fullplot​ attribute
+
+        In the results, show the following values:
+            - the publication year,
+            - the length of the full plot in terms of number of characters.
+
+        Sort the results according to the ascending order of the IMDB rating.
+*/
+FILTER: { year: { $gte: 1900, $lte: 1910 }, "imdb.rating": { $gt: 9.0 }, fullplot: { $exists: 1 } }
+PROJECT: { year: 1, "fullplot_length": { $strLenCP: "$fullplot" } }
+SORT: { "imdb.rating": 1 }
